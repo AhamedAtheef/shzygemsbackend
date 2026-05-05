@@ -41,16 +41,26 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
-  if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
   const valid = await bcrypt.compare(req.body.password, user.password);
-  if (!valid) return res.status(400).json({ message: "Wrong password" });
+
+  if (!valid) {
+    return res.status(400).json({ message: "Wrong password" });
+  }
 
   const token = generateToken(user);
 
-  res.json({ token, user });
-};
+  // Remove password and role
+  const { password, role, ...userData } = user._doc;
 
+  res.json({
+    token,
+    user: userData,
+  });
+};
 // ✅ LOGOUT (client side mainly)
 export const logout = async (req, res) => {
   res.json({ message: "Logged out successfully" });
@@ -96,3 +106,29 @@ export const resetPassword = async (req, res) => {
 
   res.json({ message: "Password reset success" });
 };
+
+export const checkUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select(
+      "-password -role"
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+}

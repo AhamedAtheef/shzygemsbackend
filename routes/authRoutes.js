@@ -4,11 +4,13 @@ import {
   register,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  checkUser
 } from "../controllers/authController.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
-
+router.get("/check-user", verifyToken, checkUser);
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);

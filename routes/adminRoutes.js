@@ -47,11 +47,13 @@ router.get("/stats", verifyToken, isAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to load dashboard stats"
-  
+
     });
   }
 });
-
+router.get("/check-admin", verifyToken, isAdmin, (req, res) => {
+  res.status(200).json(true);
+});
 // =======================
 // ✅ USERS MANAGEMENT
 // =======================
