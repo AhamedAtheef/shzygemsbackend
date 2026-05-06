@@ -109,19 +109,13 @@ export const resetPassword = async (req, res) => {
 
 export const checkUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select(
-      "-password -role"
-    );
-
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
-
     res.status(200).json({
       success: true,
-      user,
+      user: {
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+      },
     });
 
   } catch (err) {
@@ -131,4 +125,4 @@ export const checkUser = async (req, res) => {
       message: "Server error",
     });
   }
-}
+};
